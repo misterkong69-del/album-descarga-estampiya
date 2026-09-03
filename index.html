@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EstampiYA - Postal de Mardelwood</title>
+    <title>EstampiYA - Postal Clásica Mardelwood</title>
     <style>
         :root {
             --primary-color: #1a73e8;
@@ -128,7 +128,7 @@
     <div class="container">
         <header>
             <h1>EstampiYA - Álbum Postal de Mardelwood</h1>
-            <p>Capital de la Reposera | Sello Atómico <strong>ventaniYA Soluciones</strong></p>
+            <p>Capital de la Reposera | Estilo Retro 1950-1960</p>
         </header>
 
         <!-- SECCIÓN DE LOGIN -->
@@ -153,7 +153,7 @@
                 <button id="logout-btn" class="btn-danger">Cerrar Sesión</button>
             </div>
 
-            <h2 id="form-title-heading">Crear Nueva Postal con Sello Atómico</h2>
+            <h2 id="form-title-heading">Crear Nueva Postal Retro 1950/60</h2>
             <input type="hidden" id="edit-doc-id" value="">
             
             <div class="form-group">
@@ -163,12 +163,12 @@
             <div class="form-group">
                 <label for="item-type">Formato:</label>
                 <select id="item-type">
-                    <option value="Postal">Postal Clásica con Bordes Dentados</option>
-                    <option value="Estampilla">Estampilla Gigante</option>
+                    <option value="Postal">Postal con Bordes Dentados Vintage</option>
+                    <option value="Estampilla">Estampilla de Colección</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="item-desc">Mensaje / Leyenda:</label>
+                <label for="item-desc">Mensaje / Leyenda (Escrito por el usuario):</label>
                 <textarea id="item-desc" rows="2" placeholder="Obras, playa y tragos para todos..."></textarea>
             </div>
             <div class="form-group">
@@ -266,8 +266,8 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}.${ms}`;
         }
 
-        // Generar Postal Real con bordes dentados, línea de tiempo integrada gigante y sellos postales clásicos
-        function processMardelwoodPostalImage(file, titleText, customTimestamp, customHash) {
+        // Generar Postal Vintage 1950/60 con perforación dentada real y texto del usuario integrado
+        function processMardelwoodPostalImage(file, titleText, userDesc, customTimestamp, customHash) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -277,40 +277,40 @@
                         const ctx = canvas.getContext("2d");
 
                         const baseWidth = 1100;
-                        const baseHeight = 900; // formato postal espacioso
+                        const baseHeight = 1000; // Altura generosa para incluir el mensaje y sellos
 
                         canvas.width = baseWidth;
                         canvas.height = baseHeight;
 
-                        // 1. Fondo de papel postal vintage cálido (Color marfil/crema real de postal)
-                        ctx.fillStyle = "#fdfbf7";
+                        // 1. Fondo de papel postal vintage estilo 1950/60 (Marfil cálido)
+                        ctx.fillStyle = "#fbf9f4";
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // Efecto de bordes dentados / perforados de estampilla alrededor de toda la postal
-                        ctx.fillStyle = "#ffffff";
-                        const dotRadius = 10;
-                        const spacingX = 35;
-                        const spacingY = 35;
-                        
-                        // Recortar círculos en los bordes para simular perforación de sello
-                        for (let x = 20; x < canvas.width; x += spacingX) {
-                            ctx.beginPath(); ctx.arc(x, 10, dotRadius, 0, Math.PI * 2); ctx.fill();
-                            ctx.beginPath(); ctx.arc(x, canvas.height - 10, dotRadius, 0, Math.PI * 2); ctx.fill();
+                        // --- BORDES DENTADOS DE ESTAMPILLA REALES (PERFORACIONES TROQUELADAS) ---
+                        ctx.fillStyle = "#fbf9f4"; // Fondo transparente para los agujeros del sello recortado
+                        const holeRadius = 12;
+                        const step = 40;
+
+                        // Agujeros superiores e inferiores
+                        for (let x = 25; x < canvas.width; x += step) {
+                            ctx.beginPath(); ctx.arc(x, 0, holeRadius, 0, Math.PI * 2); ctx.fill();
+                            ctx.beginPath(); ctx.arc(x, canvas.height, holeRadius, 0, Math.PI * 2); ctx.fill();
                         }
-                        for (let y = 20; y < canvas.height; y += spacingY) {
-                            ctx.beginPath(); ctx.arc(10, y, dotRadius, 0, Math.PI * 2); ctx.fill();
-                            ctx.beginPath(); ctx.arc(canvas.width - 10, y, dotRadius, 0, Math.PI * 2); ctx.fill();
+                        // Agujeros laterales
+                        for (let y = 25; y < canvas.height; y += step) {
+                            ctx.beginPath(); ctx.arc(0, y, holeRadius, 0, Math.PI * 2); ctx.fill();
+                            ctx.beginPath(); ctx.arc(canvas.width, y, holeRadius, 0, Math.PI * 2); ctx.fill();
                         }
 
-                        // Marco postal clásico interno
-                        ctx.strokeStyle = "#c8b996";
-                        ctx.lineWidth = 3;
-                        ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+                        // Marco interno de la postal retro
+                        ctx.strokeStyle = "#c5b59b";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
 
                         // 2. Imagen principal de la postal
-                        const margin = 50;
+                        const margin = 45;
                         const imgAreaWidth = canvas.width - (margin * 2);
-                        const imgAreaHeight = 480;
+                        const imgAreaHeight = 450;
                         
                         let drawW = imgAreaWidth;
                         let drawH = (img.height * drawW) / img.width;
@@ -321,37 +321,42 @@
                         const drawX = margin + (imgAreaWidth - drawW) / 2;
                         const drawY = margin + 10;
 
-                        // Sombra y marco de la foto
+                        // Marco de la foto
                         ctx.fillStyle = "#ffffff";
-                        ctx.fillRect(drawX - 5, drawY - 5, drawW + 10, drawH + 10);
+                        ctx.fillRect(drawX - 4, drawY - 4, drawW + 8, drawH + 8);
                         ctx.strokeStyle = "#d0c5b4";
                         ctx.lineWidth = 1;
-                        ctx.strokeRect(drawX - 5, drawY - 5, drawW + 10, drawH + 10);
+                        ctx.strokeRect(drawX - 4, drawY - 4, drawW + 8, drawH + 8);
                         ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
                         // 3. LÍNEA DE TIEMPO INTEGRADA AL MEDIO (GRANDE, EL DOBLE DE TAMAÑO)
-                        // Placa traslúcida oscura para destacar los números digitales estilo Casio
-                        const tsBoxY = drawY + drawH + 20;
+                        const tsBoxY = drawY + drawH + 18;
                         const tsBoxHeight = 85;
                         
-                        ctx.fillStyle = "rgba(18, 20, 24, 0.92)";
+                        ctx.fillStyle = "rgba(18, 20, 24, 0.95)";
                         ctx.fillRect(margin, tsBoxY, canvas.width - (margin * 2), tsBoxHeight);
 
                         ctx.strokeStyle = "#00ffff";
                         ctx.lineWidth = 2;
                         ctx.strokeRect(margin, tsBoxY, canvas.width - (margin * 2), tsBoxHeight);
 
-                        // Texto de línea de tiempo gigante en Cian Brillante (#00ffff)
+                        // Texto de línea de tiempo en Cian Brillante
                         ctx.fillStyle = "#00ffff";
                         ctx.font = "bold 26px monospace";
                         ctx.fillText(`[TS]: ${customTimestamp}`, margin + 25, tsBoxY + 38);
                         ctx.font = "bold 20px monospace";
                         ctx.fillText(`[HASH]: ${customHash}`, margin + 25, tsBoxY + 68);
 
-                        // 4. ZONA INFERIOR: SELLOS POSTALES DE CORREO CÓSMICO Y VENTANIYA
-                        const footerY = tsBoxY + tsBoxHeight + 20;
+                        // 4. TEXTO ESCRITO POR EL USUARIO (LEYENDA / MENSAJE) ABAJO DE LA LÍNEA DE TIEMPO
+                        const userTextY = tsBoxY + tsBoxHeight + 25;
+                        ctx.fillStyle = "#202124";
+                        ctx.font = "italic bold 18px sans-serif";
+                        ctx.fillText(`"${userDesc || titleText}"`, margin + 10, userTextY);
 
-                        // Sello postal izquierdo: ventaniYA / EstampiYA
+                        // 5. ZONA INFERIOR: SELLOS POSTALES DE CORREO ESTILO 1950/60
+                        const footerY = userTextY + 20;
+
+                        // Sello postal izquierdo: Sello Atómico ventaniYA
                         ctx.strokeStyle = "#1a73e8";
                         ctx.lineWidth = 2;
                         ctx.strokeRect(margin, footerY, 320, 95);
@@ -364,9 +369,9 @@
                         ctx.fillText("SELLO ATÓMICO ESTAMPIYA", margin + 15, footerY + 52);
                         ctx.font = "11px sans-serif";
                         ctx.fillStyle = "#5f6368";
-                        ctx.fillText(`POSTAL OFICIAL: ${titleText.toUpperCase()}`, margin + 15, footerY + 78);
+                        ctx.fillText(`EDICIÓN: ${titleText.toUpperCase()}`, margin + 15, footerY + 78);
 
-                        // Sello postal derecho estilo Correo Cósmico Mardelwood (Tinta clásica de correo)
+                        // Sello postal derecho estilo Correo Cósmico Mardelwood (Tinta clásica de correo vintage)
                         const stampRightX = canvas.width - margin - 320;
                         ctx.strokeStyle = "#c5221f";
                         ctx.lineWidth = 3;
@@ -378,7 +383,7 @@
                         ctx.font = "bold 12px monospace";
                         ctx.fillText("CAPITAL DE LA REPOSERA", stampRightX + 15, footerY + 50);
                         ctx.font = "italic 11px sans-serif";
-                        ctx.fillText("Habilitado para la Bristol y el Gabinete de Lujo", stampRightX + 15, footerY + 76);
+                        ctx.fillText("Colección Oficial 1950-1960", stampRightX + 15, footerY + 76);
 
                         resolve(canvas.toDataURL("image/jpeg", 0.95));
                     };
@@ -408,7 +413,7 @@
             }
 
             saveItemBtn.disabled = true;
-            saveItemBtn.textContent = "Estampando Postal...";
+            saveItemBtn.textContent = "Estampando Postal Retro...";
 
             try {
                 let base64Image = null;
@@ -416,7 +421,7 @@
                 const formattedTimestamp = getAtomicTimestamp();
 
                 if (imageFile) {
-                    base64Image = await processMardelwoodPostalImage(imageFile, title, formattedTimestamp, uniqueHash);
+                    base64Image = await processMardelwoodPostalImage(imageFile, title, desc, formattedTimestamp, uniqueHash);
                 }
 
                 if (editId) {
@@ -435,7 +440,7 @@
                         timestamp: formattedTimestamp,
                         createdAt: new Date().toISOString()
                     });
-                    alert("¡Postal clásica de Mardelwood generada y guardada con éxito!");
+                    alert("¡Postal retro de Mardelwood generada y guardada con éxito!");
                     document.getElementById("item-title").value = "";
                     document.getElementById("item-desc").value = "";
                     document.getElementById("item-image").value = "";
@@ -460,7 +465,7 @@
                 
                 collectionGrid.innerHTML = "";
                 if (querySnapshot.empty) {
-                    collectionGrid.innerHTML = "<p>El álbum está vacío. ¡Generá tu primera postal clásica!</p>";
+                    collectionGrid.innerHTML = "<p>El álbum está vacío. ¡Generá tu primera postal retro!</p>";
                     return;
                 }
 
@@ -489,7 +494,7 @@
                         const imgTitle = e.target.getAttribute("data-title") || "postal_mardelwood";
                         const a = document.createElement("a");
                         a.href = imgSrc;
-                        a.download = `${imgTitle.replace(/\s+/g, '_')}_Mardelwood.jpg`;
+                        a.download = `${imgTitle.replace(/\s+/g, '_')}_Mardelwood_Retro.jpg`;
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
@@ -534,7 +539,7 @@
             document.getElementById("item-title").value = "";
             document.getElementById("item-desc").value = "";
             document.getElementById("item-image").value = "";
-            formTitleHeading.textContent = "Crear Nueva Postal con Sello Atómico";
+            formTitleHeading.textContent = "Crear Nueva Postal Retro 1950/60";
             saveItemBtn.textContent = "Generar Postal y Guardar";
             cancelEditBtn.classList.add("hidden");
         }
