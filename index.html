@@ -1,483 +1,161 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Álbum Filatélico & Panel - ventaniYA Soluciones</title>
-    <style>
-        :root {
-            --bg-color: #1c1815;
-            --paper-color: #f4ebd0;
-            --accent-rust: #a8421d;
-            --accent-ochre: #d48324;
-            --stamp-red: #8b261e;
-            --dark-border: #4a3525;
-        }
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            background-color: var(--bg-color);
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--paper-color);
-            display: flex;
-            justify-content: center;
-        }
-        .album-container {
-            width: 100%;
-            max-width: 950px;
-            background: #2b231d;
-            border: 8px solid var(--dark-border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border-radius: 4px;
-            padding: 40px;
-            box-sizing: border-box;
-            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
-        }
-        .header-section {
-            text-align: center;
-            border-bottom: 3px dashed var(--accent-ochre);
-            padding-bottom: 25px;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        .brand-subtitle {
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            color: var(--accent-ochre);
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        .main-title {
-            font-size: 2.3rem;
-            font-weight: bold;
-            color: var(--paper-color);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 10px 0;
-            text-shadow: 3px 3px var(--accent-rust);
-        }
-        .nav-admin-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: transparent;
-            border: 1px solid var(--accent-ochre);
-            color: var(--accent-ochre);
-            padding: 5px 10px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .nav-admin-btn:hover {
-            background: var(--accent-ochre);
-            color: #fff;
-        }
+  <meta charset="UTF-8">
+  <title>ventaniYA Soluciones - Álbum de Estampillas</title>
+  <style>
+    body { font-family: 'Courier New', monospace; background: #f4f1ea; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+    h1, h2 { text-align: center; border-bottom: 2px dashed #b5a48b; padding-bottom: 10px; }
+    .admin-panel { background: #e8e3d5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+    .card { background: #fff; border: 1px solid #dcd6cc; padding: 10px; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+    .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #eee; margin-bottom: 8px; }
+    input, button { display: block; width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
+  </style>
 
-        /* Panel Admin Oculto por defecto */
-        #adminPanel {
-            display: none;
-            background: #1e1713;
-            border: 2px solid var(--accent-rust);
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-        }
-        .admin-form input, .admin-form button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #2b231d;
-            border: 1px solid var(--dark-border);
-            color: var(--paper-color);
-            font-family: 'Courier New', Courier, monospace;
-            box-sizing: border-box;
-        }
-        .admin-form button {
-            background: var(--accent-rust);
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .admin-form button:hover {
-            background: #c45229;
-        }
-
-        .instructions {
-            text-align: center;
-            font-size: 0.95rem;
-            color: #d1b89e;
-            margin-bottom: 30px;
-            font-style: italic;
-        }
-
-        /* Grilla de Estampillas Dinámica */
-        .stamp-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .stamp-card {
-            background: #1e1713;
-            border: 2px solid var(--dark-border);
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-        .stamp-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-ochre);
-        }
-
-        .stamp-frame {
-            position: relative;
-            background: var(--paper-color);
-            padding: 8px;
-            border: 2px dashed #b5a27a;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            margin-bottom: 12px;
-        }
-        .stamp-frame img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            display: block;
-            filter: sepia(30%) contrast(110%);
-        }
-
-        .stamp-title {
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--paper-color);
-            margin-bottom: 10px;
-        }
-
-        .btn-stamp {
-            background-color: var(--accent-rust);
-            color: var(--paper-color);
-            border: none;
-            padding: 8px 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            transition: background 0.2s;
-        }
-        .btn-stamp:hover {
-            background-color: #c45229;
-        }
-
-        #renderCanvas {
-            display: none;
-        }
-
-        .footer-note {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.85rem;
-            color: #8c7355;
-            border-top: 1px solid var(--dark-border);
-            padding-top: 15px;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<div class="album-container">
-    <div class="header-section">
-        <button class="nav-admin-btn" onclick="toggleAdmin()">🔒 Panel Admin</button>
-        <div class="brand-subtitle">ventaniYA Soluciones &bull; Archivo Filatélico</div>
-        <div class="main-title">Álbum de Estampillas de Tiempo</div>
-    </div>
+  <h1>ventaniYA Soluciones</h1>
+  <h2>Álbum de Estampillas y Postcards</h2>
 
-    <div id="adminPanel">
-        <h3 style="margin-top:0; color: var(--accent-ochre);">Panel de Carga (Acceso Maestro)</h3>
-        
-        <div id="loginSection" class="admin-form">
-            <input type="email" id="adminEmail" placeholder="Correo de Administrador">
-            <input type="password" id="adminPass" placeholder="Contraseña">
-            <button onclick="loginAdmin()">Ingresar al Panel</button>
-        </div>
+  <!-- Panel de Administración (Oculto hasta loguearse) -->
+  <div id="adminSection" class="admin-panel" style="display:none;">
+    <h3>Panel de Administración</h3>
+    <p>Conectado como: <span id="userEmail"></span> <button onclick="cerrarSesion()" style="width:auto; display:inline;">Salir</button></p>
+    <form id="formEstampilla" onsubmit="subirEstampilla(event)">
+      <input type="text" id="tituloEstampilla" placeholder="Título / Descripción" required>
+      <input type="file" id="imagenEstampilla" accept="image/*" required>
+      <button type="submit">Guardar Estampilla en el Álbum</button>
+    </form>
+  </div>
 
-        <div id="uploadSection" class="admin-form" style="display:none;">
-            <p style="font-size:0.85rem; color:#4ade80;">Sesión Activa. Subí una nueva gráfica a Firebase:</p>
-            <input type="text" id="nuevaStampTitulo" placeholder="Nombre de la Estampilla / Tema">
-            <input type="file" id="nuevaStampFile" accept="image/*" style="background:transparent; border:none; padding:0;">
-            <button onclick="subirEstampillaFirebase()" id="btnSubir">Subir a la Nube</button>
-            <button onclick="logoutAdmin()" style="background:#555; margin-top:5px;">Cerrar Sesión</button>
-        </div>
-    </div>
+  <!-- Login simple para el Admin -->
+  <div id="loginSection" class="admin-panel">
+    <h3>Acceso Administrador</h3>
+    <input type="email" id="loginEmail" placeholder="Correo" value="misterkong69@gmail.com">
+    <input type="password" id="loginPassword" placeholder="Contraseña">
+    <button onclick="iniciarSesion()">Entrar</button>
+  </div>
 
-    <div class="instructions">
-        Seleccioná cualquier estampilla del archivo para certificarla al instante con marca de tiempo milimétrica, hash y sello oficial de ventaniYA Soluciones.
-    </div>
+  <hr>
 
-    <div class="stamp-grid" id="publicStampGrid">
-        <p style="text-align:center; color:#8c7355; grid-column: 1/-1;">Cargando estampillas desde Firebase...</p>
-    </div>
+  <h3>Galería Pública</h3>
+  <div id="galeria" class="gallery"></div>
 
-    <canvas id="renderCanvas" width="800" height="950"></canvas>
-
-    <div class="footer-note">
-        Certificación digital con marca de tiempo garantizada por ventaniYA Soluciones.
-    </div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
+  <script>
+    // Configuración de Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyCPTCtTAzI0UiB-4GNDmdPFAQBhq9feR9c",
-        authDomain: "albumestampiyadescarga.firebaseapp.com",
-        projectId: "albumestampiyadescarga",
-        storageBucket: "albumestampiyadescarga.firebasestorage.app",
-        messagingSenderId: "1033256533057",
-        appId: "1:1033256533057:web:4797bd6ed0f5a92c8bdac0",
-        measurementId: "G-HLGF51TSCZ"
+      apiKey: "TU_API_KEY",
+      authDomain: "albumestampiyadescarga.firebaseapp.com",
+      projectId: "albumestampiyadescarga",
+      storageBucket: "albumestampiyadescarga.appspot.com",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "1:1033256533057:web:4797bd6ed0f5a92cbdac0"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    // Funciones globales para que el HTML las invoque
-    window.toggleAdmin = function() {
-        const panel = document.getElementById('adminPanel');
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    window.loginAdmin = async function() {
-        const email = document.getElementById('adminEmail').value;
-        const pass = document.getElementById('adminPass').value;
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            alert("¡Bienvenido Master!");
-        } catch (error) {
-            alert("Error de autenticación: " + error.message);
-        }
-    }
-
-    window.logoutAdmin = async function() {
-        await signOut(auth);
-        alert("Sesión cerrada.");
-    }
-
-    window.subirEstampillaFirebase = async function() {
-        const titulo = document.getElementById('nuevaStampTitulo').value;
-        const fileInput = document.getElementById('nuevaStampFile');
-        const btn = document.getElementById('btnSubir');
-
-        if (!titulo || fileInput.files.length === 0) {
-            alert("Completá el título y elegí una imagen.");
-            return;
-        }
-
-        const file = fileInput.files[0];
-        btn.innerText = "Subiendo a Firebase...";
-        btn.disabled = true;
-
-        try {
-            const storageRef = ref(storage, `estampillas/${Date.now()}_${file.name}`);
-            const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-
-            await addDoc(collection(db, "estampillas"), {
-                titulo: titulo,
-                url: downloadURL,
-                creado: serverTimestamp()
-            });
-
-            alert("¡Estampilla subida con éxito a la nube!");
-            document.getElementById('nuevaStampTitulo').value = "";
-            fileInput.value = "";
-            cargarEstampillasPublicas();
-        } catch (error) {
-            alert("Error al subir: " + error.message);
-        } finally {
-            btn.innerText = "Subir a la Nube";
-            btn.disabled = false;
-        }
-    }
-
-    async function cargarEstampillasPublicas() {
-        const grid = document.getElementById('publicStampGrid');
-        try {
-            const querySnapshot = await getDocs(collection(db, "estampillas"));
-            grid.innerHTML = "";
-            
-            if (querySnapshot.empty) {
-                grid.innerHTML = `<p style="text-align:center; color:#8c7355; grid-column: 1/-1;">No hay estampillas cargadas aún en la nube.</p>`;
-                return;
-            }
-
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const card = document.createElement('div');
-                card.className = 'stamp-card';
-                card.innerHTML = `
-                    <div class="stamp-frame">
-                        <img src="${data.url}" alt="${data.titulo}" crossorigin="anonymous">
-                    </div>
-                    <div class="stamp-title">${data.titulo}</div>
-                    <button class="btn-stamp" onclick="certificarEstampilla('${data.titulo.replace(/'/g, "\\'")}', '${data.url}')">Sellar y Descargar</button>
-                `;
-                grid.appendChild(card);
-            });
-        } catch (error) {
-            console.error("Error al cargar estampillas:", error);
-            grid.innerHTML = `<p style="text-align:center; color:#ff6b6b; grid-column: 1/-1;">Error al conectar con la base de datos.</p>`;
-        }
-    }
-
-    // Escuchar estado de sesión
-    onAuthStateChanged(auth, (user) => {
-        const loginSec = document.getElementById('loginSection');
-        const uploadSec = document.getElementById('uploadSection');
-        if (user) {
-            loginSec.style.display = 'none';
-            uploadSec.style.display = 'block';
-        } else {
-            loginSec.style.display = 'block';
-            uploadSec.style.display = 'none';
-        }
+    // Control de estado de sesión
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById('adminSection').style.display = 'block';
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('userEmail').innerText = user.email;
+      } else {
+        document.getElementById('adminSection').style.display = 'none';
+        document.getElementById('loginSection').style.display = 'block';
+      }
     });
+
+    function iniciarSesion() {
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Error: " + err.message));
+    }
+
+    function cerrarSesion() {
+      auth.signOut();
+    }
+
+    // Subir imagen optimizada directo a Firestore en Base64 (evita Storage y costos)
+    async function subirEstampilla(event) {
+      event.preventDefault();
+      const titulo = document.getElementById('tituloEstampilla').value;
+      const archivo = document.getElementById('imagenEstampilla').files[0];
+      
+      if (!archivo) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        // Reducimos un poco la imagen convirtiéndola a canvas para que no pese en Firestore
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = async function() {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scaleSize;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+          try {
+            await db.collection("estampillas").add({
+              titulo: titulo,
+              imagenUrl: compressedBase64,
+              fecha: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("¡Estampilla guardada con éxito!");
+            document.getElementById('formEstampilla').reset();
+            cargarGaleria();
+          } catch (err) {
+            alert("Error al guardar: " + err.message);
+          }
+        }
+      };
+      reader.readAsDataURL(archivo);
+    }
+
+    // Cargar la galería pública en pantalla
+    async function cargarGaleria() {
+      const contenedor = document.getElementById('galeria');
+      contenedor.innerHTML = "Cargando galería...";
+      
+      try {
+        const snapshot = await db.collection("estampillas").orderBy("fecha", "desc").get();
+        contenedor.innerHTML = "";
+        
+        if(snapshot.empty) {
+          contenedor.innerHTML = "<p>No hay estampillas todavía.</p>";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${data.imagenUrl}" alt="${data.titulo}">
+            <h4>${data.titulo}</h4>
+          `;
+          contenedor.appendChild(card);
+        });
+      } catch (err) {
+        contenedor.innerHTML = "Error al cargar la galería.";
+      }
+    }
 
     // Cargar al iniciar la página
-    document.addEventListener("DOMContentLoaded", () => {
-        cargarEstampillasPublicas();
-    });
-</script>
-
-<script>
-    function generarHashSimulado() {
-        const chars = "abcdef0123456789";
-        let hash = "vty-";
-        for (let i = 0; i < 24; i++) {
-            hash += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return hash;
-    }
-
-    function certificarEstampilla(nombreTema, urlImagen) {
-        const canvas = document.getElementById('renderCanvas');
-        const ctx = canvas.getContext('2d');
-
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = urlImagen;
-
-        img.onload = () => {
-            ctx.fillStyle = "#f4ebd0";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = "#3d2b1f";
-            ctx.lineWidth = 6;
-            ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
-
-            ctx.strokeStyle = "#a8421d";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84);
-
-            ctx.fillStyle = "#3d2b1f";
-            ctx.font = "bold 24px 'Courier New'";
-            ctx.textAlign = "center";
-            ctx.fillText("VENTANIYA SOLUCIONES", canvas.width / 2, 85);
-
-            ctx.font = "italic 16px 'Courier New'";
-            ctx.fillStyle = "#8b261e";
-            ctx.fillText("CERTIFICADO FILATÉLICO DE TIEMPO", canvas.width / 2, 115);
-
-            const stampX = 150;
-            const stampY = 150;
-            const stampW = 500;
-            const stampH = 400;
-
-            ctx.fillStyle = "rgba(0,0,0,0.2)";
-            ctx.fillRect(stampX + 8, stampY + 8, stampW, stampH);
-
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(stampX, stampY, stampW, stampH);
-
-            ctx.drawImage(img, stampX + 20, stampY + 20, stampW - 40, stampH - 70);
-
-            ctx.fillStyle = "#2b231d";
-            ctx.font = "bold 20px 'Courier New'";
-            ctx.fillText(nombreTema.toUpperCase(), canvas.width / 2, stampY + stampH - 25);
-
-            ctx.strokeStyle = "#b5a27a";
-            ctx.lineWidth = 3;
-            ctx.setLineDash([10, 10]);
-            ctx.strokeRect(stampX, stampY, stampW, stampH);
-            ctx.setLineDash([]);
-
-            const ahora = new Date();
-            const anio = ahora.getFullYear();
-            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
-            const dia = String(ahora.getDate()).padStart(2, '0');
-            const horas = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            const segundos = String(ahora.getSeconds()).padStart(2, '0');
-            const milisegundos = String(ahora.getMilliseconds()).padStart(3, '0');
-
-            const fechaHoraCompleta = `${dia}/${mes}/${anio} - ${horas}:${minutos}:${segundos}.${milisegundos} (UTC)`;
-            const hashId = generarHashSimulado();
-            const idUnico = "ID-STAMP-" + Math.floor(100000 + Math.random() * 900000);
-
-            ctx.fillStyle = "#2b231d";
-            ctx.font = "bold 15px 'Courier New'";
-            ctx.textAlign = "left";
-            
-            const infoX = 100;
-            let infoY = 620;
-
-            ctx.fillText(`• FECHA Y HORA: ${fechaHoraCompleta}`, infoX, infoY);
-            ctx.fillText(`• HASH DE BLOQUE: ${hashId}`, infoX, infoY + 35);
-            ctx.fillText(`• IDENTIFICADOR: ${idUnico}`, infoX, infoY + 70);
-            ctx.fillText(`• EMISOR: ventaniYA Soluciones (Cloud Net)`, infoX, infoY + 105);
-
-            ctx.save();
-            ctx.translate(620, 720);
-            ctx.rotate(-0.15);
-
-            ctx.strokeStyle = "#8b261e";
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.arc(0, 0, 75, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(0, 0, 65, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.fillStyle = "#8b261e";
-            ctx.font = "bold 11px 'Courier New'";
-            ctx.textAlign = "center";
-            ctx.fillText("★ VENTANIYA ★", 0, -45);
-            ctx.fillText("SOLUCIONES", 0, 52);
-
-            ctx.font = "bold 14px 'Courier New'";
-            ctx.fillText(`${dia} ${mes} ${anio}`, 0, -8);
-            ctx.font = "bold 12px 'Courier New'";
-            ctx.fillText(`${horas}:${minutos} HS`, 0, 15);
-
-            ctx.restore();
-
-            const enlace = document.createElement('a');
-            enlace.download = `Estampilla_${idUnico}.png`;
-            enlace.href = canvas.toDataURL('image/png');
-            enlace.click();
-        };
-    }
-</script>
-
+    cargarGaleria();
+  </script>
 </body>
 </html>
