@@ -3,41 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Álbum Filatélico & Panel - ventaniYA Soluciones</title>
-    <!-- Firebase SDKs (Versión modular CDN) -->
-    <script type="module">
-        // Importar Firebase SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addFirestoreData, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
-        // ==========================================
-        // CONFIGURÁ TUS CREDENCIALES DE FIREBASE ACÁ
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "tu-proyecto.firebaseapp.com",
-            projectId: "tu-proyecto",
-            storageBucket: "tu-proyecto.appspot.com",
-            messagingSenderId: "tu_sender_id",
-            appId: "tu_app_id"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        // Exponer funciones globales para que el HTML las use
-        window.firebaseApp = { auth, db, storage, signInWithEmailAndPassword, signOut, collection, addDoc, getDocs, ref, uploadBytes, getDownloadURL, serverTimestamp };
-        
-        // Cargar estampillas al iniciar
-        document.addEventListener("DOMContentLoaded", () => {
-            cargarEstampillasPublicas();
-            chequearSesion();
-        });
-    </script>
-
     <style>
         :root {
             --bg-color: #1c1815;
@@ -229,18 +194,15 @@
         <div class="main-title">Álbum de Estampillas de Tiempo</div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN (Solo para vos) -->
     <div id="adminPanel">
         <h3 style="margin-top:0; color: var(--accent-ochre);">Panel de Carga (Acceso Maestro)</h3>
         
-        <!-- Login Form (si no está logueado) -->
         <div id="loginSection" class="admin-form">
             <input type="email" id="adminEmail" placeholder="Correo de Administrador">
             <input type="password" id="adminPass" placeholder="Contraseña">
             <button onclick="loginAdmin()">Ingresar al Panel</button>
         </div>
 
-        <!-- Uploader Form (si ya logueó) -->
         <div id="uploadSection" class="admin-form" style="display:none;">
             <p style="font-size:0.85rem; color:#4ade80;">Sesión Activa. Subí una nueva gráfica a Firebase:</p>
             <input type="text" id="nuevaStampTitulo" placeholder="Nombre de la Estampilla / Tema">
@@ -254,12 +216,10 @@
         Seleccioná cualquier estampilla del archivo para certificarla al instante con marca de tiempo milimétrica, hash y sello oficial de ventaniYA Soluciones.
     </div>
 
-    <!-- Grilla Pública Dinámica -->
     <div class="stamp-grid" id="publicStampGrid">
         <p style="text-align:center; color:#8c7355; grid-column: 1/-1;">Cargando estampillas desde Firebase...</p>
     </div>
 
-    <!-- Canvas oculto para procesar la descarga certificada -->
     <canvas id="renderCanvas" width="800" height="950"></canvas>
 
     <div class="footer-note">
@@ -267,12 +227,90 @@
     </div>
 </div>
 
-<script>
-    // Funciones de Lógica de Negocio conectadas a Firebase
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPTCtTAzI0UiB-4GNDmdPFAQBhq9feR9c",
+        authDomain: "albumestampiyadescarga.firebaseapp.com",
+        projectId: "albumestampiyadescarga",
+        storageBucket: "albumestampiyadescarga.firebasestorage.app",
+        messagingSenderId: "1033256533057",
+        appId: "1:1033256533057:web:4797bd6ed0f5a92c8bdac0",
+        measurementId: "G-HLGF51TSCZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Funciones globales para que el HTML las invoque
+    window.toggleAdmin = function() {
+        const panel = document.getElementById('adminPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.loginAdmin = async function() {
+        const email = document.getElementById('adminEmail').value;
+        const pass = document.getElementById('adminPass').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            alert("¡Bienvenido Master!");
+        } catch (error) {
+            alert("Error de autenticación: " + error.message);
+        }
+    }
+
+    window.logoutAdmin = async function() {
+        await signOut(auth);
+        alert("Sesión cerrada.");
+    }
+
+    window.subirEstampillaFirebase = async function() {
+        const titulo = document.getElementById('nuevaStampTitulo').value;
+        const fileInput = document.getElementById('nuevaStampFile');
+        const btn = document.getElementById('btnSubir');
+
+        if (!titulo || fileInput.files.length === 0) {
+            alert("Completá el título y elegí una imagen.");
+            return;
+        }
+
+        const file = fileInput.files[0];
+        btn.innerText = "Subiendo a Firebase...";
+        btn.disabled = true;
+
+        try {
+            const storageRef = ref(storage, `estampillas/${Date.now()}_${file.name}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+
+            await addDoc(collection(db, "estampillas"), {
+                titulo: titulo,
+                url: downloadURL,
+                creado: serverTimestamp()
+            });
+
+            alert("¡Estampilla subida con éxito a la nube!");
+            document.getElementById('nuevaStampTitulo').value = "";
+            fileInput.value = "";
+            cargarEstampillasPublicas();
+        } catch (error) {
+            alert("Error al subir: " + error.message);
+        } finally {
+            btn.innerText = "Subir a la Nube";
+            btn.disabled = false;
+        }
+    }
+
     async function cargarEstampillasPublicas() {
         const grid = document.getElementById('publicStampGrid');
         try {
-            const querySnapshot = await window.firebaseApp.getDocs(window.firebaseApp.collection(window.firebaseApp.db, "estampillas"));
+            const querySnapshot = await getDocs(collection(db, "estampillas"));
             grid.innerHTML = "";
             
             if (querySnapshot.empty) {
@@ -299,81 +337,26 @@
         }
     }
 
-    function toggleAdmin() {
-        const panel = document.getElementById('adminPanel');
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    async function loginAdmin() {
-        const email = document.getElementById('adminEmail').value;
-        const pass = document.getElementById('adminPass').value;
-        try {
-            await window.firebaseApp.signInWithEmailAndPassword(window.firebaseApp.auth, email, pass);
-            alert("¡Bienvenido Master!");
-        } catch (error) {
-            alert("Error de autenticación: " + error.message);
+    // Escuchar estado de sesión
+    onAuthStateChanged(auth, (user) => {
+        const loginSec = document.getElementById('loginSection');
+        const uploadSec = document.getElementById('uploadSection');
+        if (user) {
+            loginSec.style.display = 'none';
+            uploadSec.style.display = 'block';
+        } else {
+            loginSec.style.display = 'block';
+            uploadSec.style.display = 'none';
         }
-    }
+    });
 
-    async function logoutAdmin() {
-        await window.firebaseApp.signOut(window.firebaseApp.auth);
-        alert("Sesión cerrada.");
-    }
+    // Cargar al iniciar la página
+    document.addEventListener("DOMContentLoaded", () => {
+        cargarEstampillasPublicas();
+    });
+</script>
 
-    function chequearSesion() {
-        window.firebaseApp.auth.onAuthStateChanged((user) => {
-            const loginSec = document.getElementById('loginSection');
-            const uploadSec = document.getElementById('uploadSection');
-            if (user) {
-                loginSec.style.display = 'none';
-                uploadSec.style.display = 'block';
-            } else {
-                loginSec.style.display = 'block';
-                uploadSec.style.display = 'none';
-            }
-        });
-    }
-
-    async function subirEstampillaFirebase() {
-        const titulo = document.getElementById('nuevaStampTitulo').value;
-        const fileInput = document.getElementById('nuevaStampFile');
-        const btn = document.getElementById('btnSubir');
-
-        if (!titulo || fileInput.files.length === 0) {
-            alert("Completá el título y elegí una imagen.");
-            return;
-        }
-
-        const file = fileInput.files[0];
-        btn.innerText = "Subiendo a Firebase...";
-        btn.disabled = true;
-
-        try {
-            // 1. Subir archivo a Firebase Storage
-            const storageRef = window.firebaseApp.ref(window.firebaseApp.storage, `estampillas/${Date.now()}_${file.name}`);
-            const snapshot = await window.firebaseApp.uploadBytes(storageRef, file);
-            const downloadURL = await window.firebaseApp.getDownloadURL(snapshot.ref);
-
-            // 2. Guardar referencia en Cloud Firestore
-            await window.firebaseApp.addDoc(window.firebaseApp.collection(window.firebaseApp.db, "estampillas"), {
-                titulo: titulo,
-                url: downloadURL,
-                creado: window.firebaseApp.serverTimestamp()
-            });
-
-            alert("¡Estampilla subida con éxito a la nube!");
-            document.getElementById('nuevaStampTitulo').value = "";
-            fileInput.value = "";
-            cargarEstampillasPublicas();
-        } catch (error) {
-            alert("Error al subir: " + error.message);
-        } finally {
-            btn.innerText = "Subir a la Nube";
-            btn.disabled = false;
-        }
-    }
-
-    // Generador de Hash y Sello para la Descarga Pública
+<script>
     function generarHashSimulado() {
         const chars = "abcdef0123456789";
         let hash = "vty-";
