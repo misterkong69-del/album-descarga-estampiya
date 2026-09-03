@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EstampiYA - Postal Oficial Mardelwood</title>
+    <title>EstampiYA - Archivo Público Mardelwood</title>
     <style>
         :root {
             --primary-color: #1a73e8;
@@ -32,7 +32,7 @@
             margin-top: 0;
         }
         .container {
-            max-width: 950px;
+            max-width: 1100px;
             margin: 0 auto;
             background: white;
             padding: 25px;
@@ -51,7 +51,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input, textarea, select {
+        input, textarea {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
@@ -84,8 +84,8 @@
         }
         .item-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
             margin-top: 20px;
         }
         .item-card {
@@ -113,13 +113,12 @@
             padding: 6px 10px;
             font-size: 0.8rem;
         }
-        .user-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #dadce0;
+        #upload-section {
+            background: #e8f0fe;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border: 1px solid #b4d5fe;
         }
     </style>
 </head>
@@ -127,135 +126,60 @@
 
     <div class="container">
         <header>
-            <h1>EstampiYA - Álbum Postal de Mardelwood</h1>
-            <p>Capital de la Reposera | Sistema Caótico Oficial MDW</p>
+            <h1>EstampiYA - Archivo Oficial de Mardelwood</h1>
+            <p>Capital de la Reposera | Galería Pública Caótica MDW</p>
         </header>
 
-        <!-- SECCIÓN DE LOGIN -->
-        <div id="login-section">
-            <h2>Iniciar Sesión</h2>
-            <div class="form-group">
-                <label for="email">Correo electrónico:</label>
-                <input type="email" id="email" placeholder="misterkong69@gmail.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" placeholder="Tu contraseña">
-            </div>
-            <button id="login-btn">Ingresar</button>
-            <p id="login-error" style="color: #d93025; margin-top: 10px;"></p>
-        </div>
-
-        <!-- SECCIÓN PRINCIPAL DEL ÁLBUM -->
-        <div id="app-section" class="hidden">
-            <div class="user-bar">
-                <span id="user-display"></span>
-                <button id="logout-btn" class="btn-danger">Cerrar Sesión</button>
-            </div>
-
-            <h2 id="form-title-heading">Crear Nueva Postal Estilo Mardelwood Caos</h2>
-            <input type="hidden" id="edit-doc-id" value="">
+        <!-- PANEL DIRECTO PARA SUBIR (SIN CLAVES NI HISTORIAS) -->
+        <div id="upload-section">
+            <h2 id="form-title-heading" style="margin-top:0; color: #1a73e8;">Crear Nueva Postal Caótica</h2>
+            <input type="hidden" id="edit-index" value="-1">
             
             <div class="form-group">
-                <label for="item-title">Título de la Postal:</label>
-                <input type="text" id="item-title">
+                <label for="item-title">Título de la Obra / Edición:</label>
+                <input type="text" id="item-title" placeholder="Ej: Estamos en Mar del Wood">
             </div>
             <div class="form-group">
-                <label for="item-type">Formato:</label>
-                <select id="item-type">
-                    <option value="Postal">Postal con Bordes Dentados Vintage</option>
-                    <option value="Estampilla">Estampilla de Colección</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="item-desc">Mensaje / Leyenda (Tipeado Olivetti desparejo con exceso de tinta):</label>
+                <label for="item-desc">Mensaje / Leyenda:</label>
                 <textarea id="item-desc" rows="2" placeholder="Saludos desde la capital de la reposera..."></textarea>
             </div>
             <div class="form-group">
-                <label for="item-image">Imagen de la Obra:</label>
+                <label for="item-image">Imagen (Horizontal o Vertical - Se adapta sola):</label>
                 <input type="file" id="item-image" accept="image/*">
             </div>
             <div style="display: flex; gap: 10px;">
-                <button id="save-item-btn">Generar Postal Caótica y Guardar</button>
+                <button id="save-item-btn">Generar y Publicar</button>
                 <button id="cancel-edit-btn" class="btn-secondary hidden">Cancelar Edición</button>
             </div>
+        </div>
 
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #dadce0;">
-
-            <h2>Mi Colección de Postales</h2>
-            <div id="collection-grid" class="item-grid">
-                <!-- Elementos cargados -->
-            </div>
+        <!-- GALERÍA PÚBLICA -->
+        <h2>Galería de Postales (Acceso Público)</h2>
+        <div id="collection-grid" class="item-grid">
+            <!-- Las postales cargan acá -->
         </div>
     </div>
 
-    <!-- SCRIPT DE FIREBASE Y LÓGICA -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPTCtTAzI0UiB-4GNDmdPFAQBhq9feR9c",
-            authDomain: "albumestampiyadescarga.firebaseapp.com",
-            databaseURL: "https://albumestampiyadescarga-default-rtdb.firebaseio.com",
-            projectId: "albumestampiyadescarga",
-            storageBucket: "albumestampiyadescarga.firebasestorage.app",
-            messagingSenderId: "1033256533057",
-            appId: "1:1033256533057:web:4797bd6ed0f5a92c8bdac0",
-            measurementId: "G-HLGF51TSCZ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        const loginSection = document.getElementById("login-section");
-        const appSection = document.getElementById("app-section");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const loginBtn = document.getElementById("login-btn");
-        const logoutBtn = document.getElementById("logout-btn");
-        const loginError = document.getElementById("login-error");
-        const userDisplay = document.getElementById("user-display");
-        
-        const saveItemBtn = document.getElementById("save-item-btn");
-        const cancelEditBtn = document.getElementById("cancel-edit-btn");
-        const formTitleHeading = document.getElementById("form-title-heading");
-        const editDocIdInput = document.getElementById("edit-doc-id");
-        const collectionGrid = document.getElementById("collection-grid");
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loginSection.classList.add("hidden");
-                appSection.classList.remove("hidden");
-                userDisplay.textContent = `Conectado: ${user.email}`;
-                loadCollection();
-            } else {
-                loginSection.classList.remove("hidden");
-                appSection.classList.add("hidden");
-            }
-        });
-
-        loginBtn.addEventListener("click", async () => {
-            loginError.textContent = "";
+    <script>
+        // Cargar datos locales
+        function getStoredItems() {
             try {
-                await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-            } catch (error) {
-                loginError.textContent = "Error al entrar: Verificá tus credenciales.";
+                return JSON.parse(localStorage.getItem("mardelwood_postals")) || [];
+            } catch (e) {
+                return [];
             }
-        });
+        }
 
-        logoutBtn.addEventListener("click", () => {
-            signOut(auth);
-        });
+        function saveStoredItems(items) {
+            localStorage.setItem("mardelwood_postals", JSON.stringify(items));
+        }
 
         function generateUniqueHash() {
             return "MDW-VY-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Date.now().toString(36).toUpperCase();
         }
 
-        function getAtomicTimestamp(dateObj) {
-            const d = dateObj ? new Date(dateObj) : new Date();
+        function getAtomicTimestamp() {
+            const d = new Date();
             const day = String(d.getDate()).padStart(2, '0');
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const year = d.getFullYear();
@@ -266,27 +190,19 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}.${ms}`;
         }
 
-        // Simula tipeo desparejo estilo Olivetti vieja con mucha tinta acumulada
         function drawRoughOlivettiText(ctx, text, x, y) {
             ctx.font = "bold 20px 'Courier New', monospace";
             let currentX = x;
-            
-            // Variaciones aleatorias para imitar el golpe desigual del martillo de la máquina
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
-                // Efecto de tinta desbordada / peso gordo aleatorio
                 ctx.fillStyle = (i % 3 === 0) ? "#111111" : "#2a2a2a";
-                
-                // Pequeño desplazamiento caótico vertical/horizontal por letra
                 const jitterX = (Math.sin(i * 47) * 1.5);
                 const jitterY = (Math.cos(i * 31) * 1.2);
-                
                 ctx.fillText(char, currentX + jitterX, y + jitterY);
                 currentX += ctx.measureText(char).width + 1.2;
             }
         }
 
-        // Generar Postal Caótica Mardelwood con Sellos Pesados y Olivetti Tinta Gorda
         function processMardelwoodPostalImage(file, titleText, userDesc, customTimestamp, customHash) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -296,17 +212,18 @@
                         const canvas = document.createElement("canvas");
                         const ctx = canvas.getContext("2d");
 
+                        const isVertical = img.height > img.width;
                         const baseWidth = 1200;
-                        const baseHeight = 1120;
+                        const baseHeight = isVertical ? 1450 : 1120;
 
                         canvas.width = baseWidth;
                         canvas.height = baseHeight;
 
-                        // 1. Fondo de papel postal vintage cálido y ajado
+                        // Fondo postal
                         ctx.fillStyle = "#f8f4ec";
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // --- BORDES DENTADOS DE ESTAMPILLA REALES (PERFORACIONES TROQUELADAS) ---
+                        // Bordes dentados
                         ctx.fillStyle = "#202124"; 
                         const holeRadius = 10;
                         const stepX = 40;
@@ -321,15 +238,14 @@
                             ctx.beginPath(); ctx.arc(canvas.width, y, holeRadius, 0, Math.PI * 2); ctx.fill();
                         }
 
-                        // Marco interno áspero de la postal
                         ctx.strokeStyle = "#b5a285";
                         ctx.lineWidth = 3;
                         ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-                        // 2. IMAGEN PRINCIPAL MAXIMIZADA
+                        // Imagen
                         const margin = 30;
                         const imgAreaWidth = canvas.width - (margin * 2);
-                        const imgAreaHeight = 650;
+                        const imgAreaHeight = isVertical ? 920 : 650;
                         
                         let drawW = imgAreaWidth;
                         let drawH = (img.height * drawW) / img.width;
@@ -340,7 +256,6 @@
                         const drawX = margin + (imgAreaWidth - drawW) / 2;
                         const drawY = margin + 5;
 
-                        // Marco y sombra de la foto
                         ctx.fillStyle = "#ffffff";
                         ctx.fillRect(drawX - 5, drawY - 5, drawW + 10, drawH + 10);
                         ctx.strokeStyle = "#b5a285";
@@ -348,7 +263,7 @@
                         ctx.strokeRect(drawX - 5, drawY - 5, drawW + 10, drawH + 10);
                         ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
-                        // 3. LÍNEA DE TIEMPO INTEGRADA AL MEDIO (MÁS GRANDE Y VÍA MILISEGUNDO)
+                        // Línea de tiempo
                         const tsBoxY = drawY + drawH + 15;
                         const tsBoxHeight = 75;
                         
@@ -359,24 +274,22 @@
                         ctx.lineWidth = 2.5;
                         ctx.strokeRect(margin, tsBoxY, canvas.width - (margin * 2), tsBoxHeight);
 
-                        // Texto de línea de tiempo ampliado y preciso al milisegundo
                         ctx.fillStyle = "#00ffff";
                         ctx.font = "bold 25px monospace";
                         ctx.fillText(`[TS]: ${customTimestamp}`, margin + 25, tsBoxY + 32);
                         ctx.font = "bold 21px monospace";
                         ctx.fillText(`[HASH]: ${customHash}`, margin + 25, tsBoxY + 58);
 
-                        // 4. TEXTO ESCRITO POR EL USUARIO ABAJO (TIPO OLIVETTI REVIEJA CON EXCESO DE TINTA)
+                        // Texto Olivetti
                         const userTextY = tsBoxY + tsBoxHeight + 30;
                         const textToPrint = `"${userDesc || titleText}"`;
                         drawRoughOlivettiText(ctx, textToPrint, margin + 10, userTextY);
 
-                        // 5. ZONA INFERIOR: SELLOS ESTADO MARDELWOOD (PESADOS, CARGADOS Y TINTADOS)
+                        // Sellos
                         const footerY = userTextY + 25;
 
-                        // Sello izquierdo: Sello Atómico ventaniYA / ID de Trámite MDW (Valor 1 MK)
                         ctx.strokeStyle = "#0d47a1";
-                        ctx.lineWidth = 3.5; // Sello pesado con mucha tinta
+                        ctx.lineWidth = 3.5;
                         ctx.strokeRect(margin, footerY, 350, 95);
                         
                         ctx.fillStyle = "#0d47a1";
@@ -389,10 +302,9 @@
                         ctx.fillStyle = "#c62828";
                         ctx.fillText(`ID OFICIAL: ${titleText.toUpperCase()} (TASA: 10 PTOS)`, margin + 12, footerY + 76);
 
-                        // Sello derecho: Correo Cósmico Mardelwood (Estilo sello antiguo pesado de estado)
                         const stampRightX = canvas.width - margin - 350;
                         ctx.strokeStyle = "#b71c1c";
-                        ctx.lineWidth = 4; // Tinta pesada roja vintage
+                        ctx.lineWidth = 4;
                         ctx.strokeRect(stampRightX, footerY, 350, 95);
 
                         ctx.fillStyle = "#b71c1c";
@@ -404,7 +316,7 @@
                         ctx.fillStyle = "#222222";
                         ctx.fillText("HABILITADO GABINETE DE LUJO (5 LOBOMONEDAS)", stampRightX + 15, footerY + 76);
 
-                        resolve(canvas.toDataURL("image/jpeg", 0.95));
+                        resolve(canvas.toDataURL("image/jpeg", 0.90));
                     };
                     img.onerror = reject;
                     img.src = e.target.result;
@@ -414,154 +326,134 @@
             });
         }
 
-        // Guardar o Actualizar Elemento
+        const saveItemBtn = document.getElementById("save-item-btn");
+        const cancelEditBtn = document.getElementById("cancel-edit-btn");
+        const formTitleHeading = document.getElementById("form-title-heading");
+        const editIndexInput = document.getElementById("edit-index");
+        const collectionGrid = document.getElementById("collection-grid");
+
         saveItemBtn.addEventListener("click", async () => {
             const title = document.getElementById("item-title").value;
             const desc = document.getElementById("item-desc").value;
             const imageFile = document.getElementById("item-image").files[0];
-            const editId = editDocIdInput.value;
+            const editIdx = parseInt(editIndexInput.value);
 
             if (!title) {
-                alert("Por favor ingresá un título para la postal.");
+                alert("Ingresá un título.");
                 return;
             }
-
-            if (!editId && !imageFile) {
-                alert("Seleccioná una imagen para generar la postal.");
+            if (editIdx === -1 && !imageFile) {
+                alert("Seleccioná una imagen.");
                 return;
             }
 
             saveItemBtn.disabled = true;
-            saveItemBtn.textContent = "Estampando Caos Mardelwood...";
+            saveItemBtn.textContent = "Procesando...";
 
-            try {
-                let base64Image = null;
-                const uniqueHash = generateUniqueHash();
-                const formattedTimestamp = getAtomicTimestamp();
+            let items = getStoredItems();
+            let base64Image = editIdx !== -1 ? items[editIdx].image : null;
+            const uniqueHash = editIdx !== -1 ? items[editIdx].hash : generateUniqueHash();
+            const formattedTimestamp = editIdx !== -1 ? items[editIdx].timestamp : getAtomicTimestamp();
 
-                if (imageFile) {
-                    base64Image = await processMardelwoodPostalImage(imageFile, title, desc, formattedTimestamp, uniqueHash);
-                }
-
-                if (editId) {
-                    const updateData = { title, desc, updatedAt: new Date().toISOString() };
-                    if (base64Image) updateData.image = base64Image;
-
-                    await updateDoc(doc(db, "items", editId), updateData);
-                    alert("¡Postal actualizada correctamente!");
-                    resetForm();
-                } else {
-                    await addDoc(collection(db, "items"), {
-                        title,
-                        desc,
-                        image: base64Image,
-                        hash: uniqueHash,
-                        timestamp: formattedTimestamp,
-                        createdAt: new Date().toISOString()
-                    });
-                    alert("¡Postal caótica de Mardelwood generada y guardada con éxito!");
-                    document.getElementById("item-title").value = "";
-                    document.getElementById("item-desc").value = "";
-                    document.getElementById("item-image").value = "";
-                }
-
-                loadCollection();
-            } catch (error) {
-                console.error("Error al guardar:", error);
-                alert("Ocurrió un error al procesar la postal.");
-            } finally {
-                saveItemBtn.disabled = false;
-                saveItemBtn.textContent = "Generar Postal Caótica y Guardar";
+            if (imageFile) {
+                base64Image = await processMardelwoodPostalImage(imageFile, title, desc, formattedTimestamp, uniqueHash);
             }
+
+            if (editIdx !== -1) {
+                items[editIdx] = { title, desc, image: base64Image, hash: uniqueHash, timestamp: formattedTimestamp };
+            } else {
+                items.unshift({ title, desc, image: base64Image, hash: uniqueHash, timestamp: formattedTimestamp });
+            }
+
+            saveStoredItems(items);
+            resetForm();
+            loadGallery();
+
+            saveItemBtn.disabled = false;
+            saveItemBtn.textContent = "Generar y Publicar";
         });
 
-        // Cargar colección
-        async function loadCollection() {
-            collectionGrid.innerHTML = "<p>Cargando colección...</p>";
-            try {
-                const q = query(collection(db, "items"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                collectionGrid.innerHTML = "";
-                if (querySnapshot.empty) {
-                    collectionGrid.innerHTML = "<p>El álbum está vacío. ¡Generá tu primera postal caótica!</p>";
-                    return;
-                }
+        function loadGallery() {
+            const items = getStoredItems();
+            collectionGrid.innerHTML = "";
 
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const docId = docSnap.id;
-
-                    const card = document.createElement("div");
-                    card.className = "item-card";
-                    card.innerHTML = `
-                        <img src="${data.image || ''}" alt="${data.title}">
-                        <h3>${data.title}</h3>
-                        <p><small>${data.desc || ""}</small></p>
-                        <div class="card-actions">
-                            <button class="btn-secondary download-btn" data-img="${data.image}" data-title="${data.title}">Descargar Postal</button>
-                            <button class="btn-secondary edit-btn" data-id="${docId}" data-title="${data.title}" data-desc="${data.desc || ""}">Editar</button>
-                            <button class="btn-danger delete-btn" data-id="${docId}">Borrar</button>
-                        </div>
-                    `;
-                    collectionGrid.appendChild(card);
-                });
-
-                document.querySelectorAll(".download-btn").forEach(btn => {
-                    btn.addEventListener("click", (e) => {
-                        const imgSrc = e.target.getAttribute("data-img");
-                        const imgTitle = e.target.getAttribute("data-title") || "postal_mardelwood";
-                        const a = document.createElement("a");
-                        a.href = imgSrc;
-                        a.download = `${imgTitle.replace(/\s+/g, '_')}_Mardelwood_Caos.jpg`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    });
-                });
-
-                document.querySelectorAll(".edit-btn").forEach(btn => {
-                    btn.addEventListener("click", (e) => {
-                        editDocIdInput.value = e.target.getAttribute("data-id");
-                        document.getElementById("item-title").value = e.target.getAttribute("data-title");
-                        document.getElementById("item-desc").value = e.target.getAttribute("data-desc");
-                        
-                        formTitleHeading.textContent = "Editar Postal";
-                        saveItemBtn.textContent = "Guardar Cambios";
-                        cancelEditBtn.classList.remove("hidden");
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-                });
-
-                document.querySelectorAll(".delete-btn").forEach(btn => {
-                    btn.addEventListener("click", async (e) => {
-                        if (confirm("¿Estás seguro de eliminar esta postal?")) {
-                            const id = e.target.getAttribute("data-id");
-                            await deleteDoc(doc(db, "items", id));
-                            loadCollection();
-                        }
-                    });
-                });
-
-            } catch (error) {
-                console.error("Error al cargar colección:", error);
-                collectionGrid.innerHTML = "<p>Error al cargar el álbum.</p>";
+            if (items.length === 0) {
+                collectionGrid.innerHTML = "<p>No hay postales todavía.</p>";
+                return;
             }
+
+            items.forEach((item, index) => {
+                const card = document.createElement("div");
+                card.className = "item-card";
+                card.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}">
+                    <h3>${item.title}</h3>
+                    <p><small>${item.desc || ""}</small></p>
+                    <div class="card-actions">
+                        <button class="btn-secondary download-btn" data-img="${item.image}" data-title="${item.title}">Descargar</button>
+                        <button class="btn-secondary edit-btn" data-index="${index}">Editar</button>
+                        <button class="btn-danger delete-btn" data-index="${index}">Borrar</button>
+                    </div>
+                `;
+                collectionGrid.appendChild(card);
+            });
+
+            // Descargar
+            document.querySelectorAll(".download-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const imgSrc = e.target.getAttribute("data-img");
+                    const imgTitle = e.target.getAttribute("data-title") || "postal";
+                    const a = document.createElement("a");
+                    a.href = imgSrc;
+                    a.download = `${imgTitle.replace(/\s+/g, '_')}_Mardelwood.jpg`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                });
+            });
+
+            // Editar
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const idx = e.target.getAttribute("data-index");
+                    const item = items[idx];
+                    editIndexInput.value = idx;
+                    document.getElementById("item-title").value = item.title;
+                    document.getElementById("item-desc").value = item.desc || "";
+                    formTitleHeading.textContent = "Editar Postal";
+                    saveItemBtn.textContent = "Guardar Cambios";
+                    cancelEditBtn.classList.remove("hidden");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Borrar
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    if (confirm("¿Borrar esta postal?")) {
+                        const idx = e.target.getAttribute("data-index");
+                        let items = getStoredItems();
+                        items.splice(idx, 1);
+                        saveStoredItems(items);
+                        loadGallery();
+                    }
+                });
+            });
         }
 
-        cancelEditBtn.addEventListener("click", () => {
-            resetForm();
-        });
+        cancelEditBtn.addEventListener("click", resetForm);
 
         function resetForm() {
-            editDocIdInput.value = "";
+            editIndexInput.value = "-1";
             document.getElementById("item-title").value = "";
             document.getElementById("item-desc").value = "";
             document.getElementById("item-image").value = "";
-            formTitleHeading.textContent = "Crear Nueva Postal Estilo Mardelwood Caos";
-            saveItemBtn.textContent = "Generar Postal Caótica y Guardar";
+            formTitleHeading.textContent = "Crear Nueva Postal Caótica";
+            saveItemBtn.textContent = "Generar y Publicar";
             cancelEditBtn.classList.add("hidden");
         }
+
+        loadGallery();
     </script>
 </body>
 </html>
