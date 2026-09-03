@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EstampiYA - Mardelwood Capital de la Reposera</title>
+    <title>EstampiYA - Postal de Mardelwood</title>
     <style>
         :root {
             --primary-color: #1a73e8;
-            --secondary-color: #121417;
+            --secondary-color: #f4f1ea;
             --accent-color: #00ffff;
-            --text-color: #f8f9fa;
+            --text-color: #202124;
         }
         body {
             font-family: Arial, sans-serif;
-            background-color: #1b1e23;
+            background-color: var(--secondary-color);
             color: var(--text-color);
             margin: 0;
             padding: 20px;
@@ -23,22 +23,22 @@
             margin-bottom: 30px;
         }
         header h1 {
-            color: var(--accent-color);
+            color: var(--primary-color);
             margin-bottom: 5px;
         }
         header p {
-            color: #9aa0a6;
+            color: #5f6368;
             font-size: 0.9rem;
             margin-top: 0;
         }
         .container {
             max-width: 950px;
             margin: 0 auto;
-            background: #20242b;
+            background: white;
             padding: 25px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            border: 1px solid #3c4043;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 1px solid #d0c5b4;
         }
         .hidden {
             display: none !important;
@@ -50,15 +50,12 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            color: #bdc1c6;
         }
         input, textarea, select {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
-            border: 1px solid #5f6368;
-            background: #2d3139;
-            color: white;
+            border: 1px solid #dadce0;
             border-radius: 4px;
         }
         button {
@@ -92,19 +89,19 @@
             margin-top: 20px;
         }
         .item-card {
-            border: 1px solid #3c4043;
+            border: 1px solid #d0c5b4;
             border-radius: 8px;
             padding: 15px;
-            background: #282c34;
+            background: #faf8f5;
             text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
         }
         .item-card img {
             max-width: 100%;
             height: auto;
-            border-radius: 4px;
+            border-radius: 2px;
             margin-bottom: 10px;
-            border: 1px solid #444;
+            border: 1px solid #ccc;
         }
         .card-actions {
             display: flex;
@@ -122,7 +119,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #3c4043;
+            border-bottom: 1px solid #dadce0;
         }
     </style>
 </head>
@@ -130,8 +127,8 @@
 
     <div class="container">
         <header>
-            <h1>EstampiYA - Álbum de Postales</h1>
-            <p>Mardelwood • Capital de la Reposera | Sello Atómico <strong>ventaniYA Soluciones</strong></p>
+            <h1>EstampiYA - Álbum Postal de Mardelwood</h1>
+            <p>Capital de la Reposera | Sello Atómico <strong>ventaniYA Soluciones</strong></p>
         </header>
 
         <!-- SECCIÓN DE LOGIN -->
@@ -156,34 +153,34 @@
                 <button id="logout-btn" class="btn-danger">Cerrar Sesión</button>
             </div>
 
-            <h2 id="form-title-heading">Generar Nueva Postal / Estampilla</h2>
+            <h2 id="form-title-heading">Crear Nueva Postal con Sello Atómico</h2>
             <input type="hidden" id="edit-doc-id" value="">
             
             <div class="form-group">
-                <label for="item-title">Título (Ej: Gabinete de Lujo MDW):</label>
+                <label for="item-title">Título de la Postal:</label>
                 <input type="text" id="item-title">
             </div>
             <div class="form-group">
-                <label for="item-type">Tipo de Formato:</label>
+                <label for="item-type">Formato:</label>
                 <select id="item-type">
-                    <option value="Postal">Postal Cósmica de Mardelwood</option>
-                    <option value="Estampilla">Estampilla Vintage</option>
+                    <option value="Postal">Postal Clásica con Bordes Dentados</option>
+                    <option value="Estampilla">Estampilla Gigante</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="item-desc">Descripción / Leyenda:</label>
+                <label for="item-desc">Mensaje / Leyenda:</label>
                 <textarea id="item-desc" rows="2" placeholder="Obras, playa y tragos para todos..."></textarea>
             </div>
             <div class="form-group">
-                <label for="item-image">Imagen Base:</label>
+                <label for="item-image">Imagen de la Obra:</label>
                 <input type="file" id="item-image" accept="image/*">
             </div>
             <div style="display: flex; gap: 10px;">
-                <button id="save-item-btn">Generar y Guardar en el Álbum</button>
+                <button id="save-item-btn">Generar Postal y Guardar</button>
                 <button id="cancel-edit-btn" class="btn-secondary hidden">Cancelar Edición</button>
             </div>
 
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #3c4043;">
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #dadce0;">
 
             <h2>Mi Colección de Postales</h2>
             <div id="collection-grid" class="item-grid">
@@ -253,12 +250,10 @@
             signOut(auth);
         });
 
-        // Generar hash único
         function generateUniqueHash() {
             return "MDW-VY-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Date.now().toString(36).toUpperCase();
         }
 
-        // Formato 24hs con milisegundos exactos estilo reloj Casio
         function getAtomicTimestamp(dateObj) {
             const d = dateObj ? new Date(dateObj) : new Date();
             const day = String(d.getDate()).padStart(2, '0');
@@ -271,8 +266,8 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}.${ms}`;
         }
 
-        // Procesar imagen integrando la línea de tiempo, sello atómico y diseño postal dentro del canvas
-        function processMardelwoodPostalImage(file, type, titleText, customTimestamp, customHash) {
+        // Generar Postal Real con bordes dentados, línea de tiempo integrada gigante y sellos postales clásicos
+        function processMardelwoodPostalImage(file, titleText, customTimestamp, customHash) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -281,31 +276,41 @@
                         const canvas = document.createElement("canvas");
                         const ctx = canvas.getContext("2d");
 
-                        const baseWidth = 1000;
-                        const isStamp = type === "Estampilla";
-                        // Proporción postal apaisada o estampilla vertical
-                        const baseHeight = isStamp ? 1200 : 750; 
+                        const baseWidth = 1100;
+                        const baseHeight = 900; // formato postal espacioso
 
                         canvas.width = baseWidth;
                         canvas.height = baseHeight;
 
-                        // 1. Fondo estilo papel pergamino / cartulina vintage de coleccionista
-                        ctx.fillStyle = "#16181d";
+                        // 1. Fondo de papel postal vintage cálido (Color marfil/crema real de postal)
+                        ctx.fillStyle = "#fdfbf7";
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // Marco exterior doble de postal vintage
-                        ctx.strokeStyle = "#00ffff";
-                        ctx.lineWidth = 3;
-                        ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+                        // Efecto de bordes dentados / perforados de estampilla alrededor de toda la postal
+                        ctx.fillStyle = "#ffffff";
+                        const dotRadius = 10;
+                        const spacingX = 35;
+                        const spacingY = 35;
+                        
+                        // Recortar círculos en los bordes para simular perforación de sello
+                        for (let x = 20; x < canvas.width; x += spacingX) {
+                            ctx.beginPath(); ctx.arc(x, 10, dotRadius, 0, Math.PI * 2); ctx.fill();
+                            ctx.beginPath(); ctx.arc(x, canvas.height - 10, dotRadius, 0, Math.PI * 2); ctx.fill();
+                        }
+                        for (let y = 20; y < canvas.height; y += spacingY) {
+                            ctx.beginPath(); ctx.arc(10, y, dotRadius, 0, Math.PI * 2); ctx.fill();
+                            ctx.beginPath(); ctx.arc(canvas.width - 10, y, dotRadius, 0, Math.PI * 2); ctx.fill();
+                        }
 
-                        ctx.strokeStyle = "#3c4043";
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(28, 28, canvas.width - 56, canvas.height - 56);
+                        // Marco postal clásico interno
+                        ctx.strokeStyle = "#c8b996";
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
 
                         // 2. Imagen principal de la postal
-                        const margin = 45;
+                        const margin = 50;
                         const imgAreaWidth = canvas.width - (margin * 2);
-                        const imgAreaHeight = isStamp ? 700 : 430;
+                        const imgAreaHeight = 480;
                         
                         let drawW = imgAreaWidth;
                         let drawH = (img.height * drawW) / img.width;
@@ -316,56 +321,64 @@
                         const drawX = margin + (imgAreaWidth - drawW) / 2;
                         const drawY = margin + 10;
 
-                        // Marco y sombra de la foto
-                        ctx.fillStyle = "#000000";
-                        ctx.fillRect(drawX - 6, drawY - 6, drawW + 12, drawH + 12);
+                        // Sombra y marco de la foto
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillRect(drawX - 5, drawY - 5, drawW + 10, drawH + 10);
+                        ctx.strokeStyle = "#d0c5b4";
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(drawX - 5, drawY - 5, drawW + 10, drawH + 10);
                         ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
-                        // 3. Franja inferior integrada con diseño de Sello Atómico y Línea de Tiempo digital
-                        const footerHeight = 160;
-                        const footerY = canvas.height - footerHeight - 45;
+                        // 3. LÍNEA DE TIEMPO INTEGRADA AL MEDIO (GRANDE, EL DOBLE DE TAMAÑO)
+                        // Placa traslúcida oscura para destacar los números digitales estilo Casio
+                        const tsBoxY = drawY + drawH + 20;
+                        const tsBoxHeight = 85;
                         
-                        ctx.fillStyle = "#0d1117";
-                        ctx.fillRect(margin, footerY, canvas.width - (margin * 2), footerHeight);
+                        ctx.fillStyle = "rgba(18, 20, 24, 0.92)";
+                        ctx.fillRect(margin, tsBoxY, canvas.width - (margin * 2), tsBoxHeight);
 
                         ctx.strokeStyle = "#00ffff";
                         ctx.lineWidth = 2;
-                        ctx.strokeRect(margin, footerY, canvas.width - (margin * 2), footerHeight);
+                        ctx.strokeRect(margin, tsBoxY, canvas.width - (margin * 2), tsBoxHeight);
 
-                        // Estampilla / Sello lateral decorativo "Correo Cósmico Mardelwood"
-                        ctx.fillStyle = "#1a73e8";
-                        ctx.fillRect(canvas.width - margin - 220, footerY + 15, 200, 130);
-                        ctx.strokeStyle = "#00ffff";
-                        ctx.strokeRect(canvas.width - margin - 220, footerY + 15, 200, 130);
-
-                        ctx.fillStyle = "#ffffff";
-                        ctx.font = "bold 12px Arial";
-                        ctx.fillText("CORREO CÓSMICO", canvas.width - margin - 205, footerY + 38);
-                        ctx.font = "bold 14px Arial";
+                        // Texto de línea de tiempo gigante en Cian Brillante (#00ffff)
                         ctx.fillStyle = "#00ffff";
-                        ctx.fillText("MARDELWOOD", canvas.width - margin - 205, footerY + 60);
-                        ctx.font = "10px monospace";
-                        ctx.fillStyle = "#ffffff";
-                        ctx.fillText("CAPITAL DE LA REPOSERA", canvas.width - margin - 205, footerY + 85);
-                        ctx.fillText("★ V1.0 - OFICIAL ★", canvas.width - margin - 205, footerY + 115);
+                        ctx.font = "bold 26px monospace";
+                        ctx.fillText(`[TS]: ${customTimestamp}`, margin + 25, tsBoxY + 38);
+                        ctx.font = "bold 20px monospace";
+                        ctx.fillText(`[HASH]: ${customHash}`, margin + 25, tsBoxY + 68);
 
-                        // 4. Textos en cian brillante estilo reloj Casio 80s para la Línea de Tiempo y Hash
-                        const cyanColor = "#00ffff";
+                        // 4. ZONA INFERIOR: SELLOS POSTALES DE CORREO CÓSMICO Y VENTANIYA
+                        const footerY = tsBoxY + tsBoxHeight + 20;
+
+                        // Sello postal izquierdo: ventaniYA / EstampiYA
+                        ctx.strokeStyle = "#1a73e8";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(margin, footerY, 320, 95);
                         
-                        ctx.fillStyle = cyanColor;
+                        ctx.fillStyle = "#1a73e8";
+                        ctx.font = "bold 13px Arial";
+                        ctx.fillText("★ ventaniYA Soluciones ★", margin + 15, footerY + 25);
                         ctx.font = "bold 15px monospace";
-                        ctx.fillText(`⚡ ventaniYA Soluciones | Sello Atómico EstampiYA`, margin + 20, footerY + 35);
+                        ctx.fillStyle = "#202124";
+                        ctx.fillText("SELLO ATÓMICO ESTAMPIYA", margin + 15, footerY + 52);
+                        ctx.font = "11px sans-serif";
+                        ctx.fillStyle = "#5f6368";
+                        ctx.fillText(`POSTAL OFICIAL: ${titleText.toUpperCase()}`, margin + 15, footerY + 78);
 
-                        // Título de la obra impreso
-                        ctx.fillStyle = "#ffffff";
-                        ctx.font = "bold 16px sans-serif";
-                        ctx.fillText(`POSTAL: ${titleText.toUpperCase()}`, margin + 20, footerY + 68);
+                        // Sello postal derecho estilo Correo Cósmico Mardelwood (Tinta clásica de correo)
+                        const stampRightX = canvas.width - margin - 320;
+                        ctx.strokeStyle = "#c5221f";
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(stampRightX, footerY, 320, 95);
 
-                        // Línea de tiempo atómica (Activo principal)
-                        ctx.fillStyle = cyanColor;
-                        ctx.font = "bold 15px monospace";
-                        ctx.fillText(`[TS]: ${customTimestamp}`, margin + 20, footerY + 105);
-                        ctx.fillText(`[HASH]: ${customHash}`, margin + 20, footerY + 135);
+                        ctx.fillStyle = "#c5221f";
+                        ctx.font = "bold 14px Arial";
+                        ctx.fillText("CORREO CÓSMICO MARDELWOOD", stampRightX + 15, footerY + 25);
+                        ctx.font = "bold 12px monospace";
+                        ctx.fillText("CAPITAL DE LA REPOSERA", stampRightX + 15, footerY + 50);
+                        ctx.font = "italic 11px sans-serif";
+                        ctx.fillText("Habilitado para la Bristol y el Gabinete de Lujo", stampRightX + 15, footerY + 76);
 
                         resolve(canvas.toDataURL("image/jpeg", 0.95));
                     };
@@ -380,7 +393,6 @@
         // Guardar o Actualizar Elemento
         saveItemBtn.addEventListener("click", async () => {
             const title = document.getElementById("item-title").value;
-            const type = document.getElementById("item-type").value;
             const desc = document.getElementById("item-desc").value;
             const imageFile = document.getElementById("item-image").files[0];
             const editId = editDocIdInput.value;
@@ -396,7 +408,7 @@
             }
 
             saveItemBtn.disabled = true;
-            saveItemBtn.textContent = "Estampando Línea de Tiempo...";
+            saveItemBtn.textContent = "Estampando Postal...";
 
             try {
                 let base64Image = null;
@@ -404,11 +416,11 @@
                 const formattedTimestamp = getAtomicTimestamp();
 
                 if (imageFile) {
-                    base64Image = await processMardelwoodPostalImage(imageFile, type, title, formattedTimestamp, uniqueHash);
+                    base64Image = await processMardelwoodPostalImage(imageFile, title, formattedTimestamp, uniqueHash);
                 }
 
                 if (editId) {
-                    const updateData = { title, type, desc, updatedAt: new Date().toISOString() };
+                    const updateData = { title, desc, updatedAt: new Date().toISOString() };
                     if (base64Image) updateData.image = base64Image;
 
                     await updateDoc(doc(db, "items", editId), updateData);
@@ -417,14 +429,13 @@
                 } else {
                     await addDoc(collection(db, "items"), {
                         title,
-                        type,
                         desc,
                         image: base64Image,
                         hash: uniqueHash,
                         timestamp: formattedTimestamp,
                         createdAt: new Date().toISOString()
                     });
-                    alert("¡Postal de Mardelwood generada y guardada con éxito!");
+                    alert("¡Postal clásica de Mardelwood generada y guardada con éxito!");
                     document.getElementById("item-title").value = "";
                     document.getElementById("item-desc").value = "";
                     document.getElementById("item-image").value = "";
@@ -436,7 +447,7 @@
                 alert("Ocurrió un error al procesar la postal.");
             } finally {
                 saveItemBtn.disabled = false;
-                saveItemBtn.textContent = "Generar y Guardar en el Álbum";
+                saveItemBtn.textContent = "Generar Postal y Guardar";
             }
         });
 
@@ -449,7 +460,7 @@
                 
                 collectionGrid.innerHTML = "";
                 if (querySnapshot.empty) {
-                    collectionGrid.innerHTML = "<p>El álbum está vacío. ¡Generá tu primera postal de Mardelwood!</p>";
+                    collectionGrid.innerHTML = "<p>El álbum está vacío. ¡Generá tu primera postal clásica!</p>";
                     return;
                 }
 
@@ -465,14 +476,13 @@
                         <p><small>${data.desc || ""}</small></p>
                         <div class="card-actions">
                             <button class="btn-secondary download-btn" data-img="${data.image}" data-title="${data.title}">Descargar Postal</button>
-                            <button class="btn-secondary edit-btn" data-id="${docId}" data-title="${data.title}" data-type="${data.type}" data-desc="${data.desc || ""}">Editar</button>
+                            <button class="btn-secondary edit-btn" data-id="${docId}" data-title="${data.title}" data-desc="${data.desc || ""}">Editar</button>
                             <button class="btn-danger delete-btn" data-id="${docId}">Borrar</button>
                         </div>
                     `;
                     collectionGrid.appendChild(card);
                 });
 
-                // Descarga directa de la imagen integrada
                 document.querySelectorAll(".download-btn").forEach(btn => {
                     btn.addEventListener("click", (e) => {
                         const imgSrc = e.target.getAttribute("data-img");
@@ -486,12 +496,10 @@
                     });
                 });
 
-                // Editar
                 document.querySelectorAll(".edit-btn").forEach(btn => {
                     btn.addEventListener("click", (e) => {
                         editDocIdInput.value = e.target.getAttribute("data-id");
                         document.getElementById("item-title").value = e.target.getAttribute("data-title");
-                        document.getElementById("item-type").value = e.target.getAttribute("data-type");
                         document.getElementById("item-desc").value = e.target.getAttribute("data-desc");
                         
                         formTitleHeading.textContent = "Editar Postal";
@@ -501,7 +509,6 @@
                     });
                 });
 
-                // Borrar
                 document.querySelectorAll(".delete-btn").forEach(btn => {
                     btn.addEventListener("click", async (e) => {
                         if (confirm("¿Estás seguro de eliminar esta postal?")) {
@@ -527,8 +534,8 @@
             document.getElementById("item-title").value = "";
             document.getElementById("item-desc").value = "";
             document.getElementById("item-image").value = "";
-            formTitleHeading.textContent = "Generar Nueva Postal / Estampilla";
-            saveItemBtn.textContent = "Generar y Guardar en el Álbum";
+            formTitleHeading.textContent = "Crear Nueva Postal con Sello Atómico";
+            saveItemBtn.textContent = "Generar Postal y Guardar";
             cancelEditBtn.classList.add("hidden");
         }
     </script>
