@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Álbum de Estampillas y Postales - ventaniYA Soluciones</title>
+    <title>Álbum Vintage de Estampillas - ventaniYA Soluciones</title>
     <style>
         :root {
             --primary-color: #1a73e8;
@@ -95,18 +95,13 @@
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .item-card.estampilla img {
-            border: 6px solid #fff;
-            box-shadow: 0 0 6px rgba(0,0,0,0.25);
-        }
-        .item-card.postal img {
-            border: 2px solid #ccc;
-            border-radius: 4px;
-        }
         .item-card img {
             max-width: 100%;
-            height: 180px;
-            object-fit: cover;
+            height: 200px;
+            object-fit: contain;
+            background: #111;
+            padding: 4px;
+            border-radius: 4px;
             margin-bottom: 10px;
         }
         .meta-info {
@@ -143,8 +138,8 @@
 
     <div class="container">
         <header>
-            <h1>Álbum de Estampillas y Postales</h1>
-            <p>Sello Atómico & Trazabilidad de <strong>ventaniYA Soluciones</strong></p>
+            <h1>Álbum Vintage de Estampillas y Postales</h1>
+            <p>Diseño con Troquelado & Sello Cian de <strong>ventaniYA Soluciones</strong></p>
         </header>
 
         <!-- SECCIÓN DE LOGIN -->
@@ -179,8 +174,8 @@
             <div class="form-group">
                 <label for="item-type">Tipo:</label>
                 <select id="item-type">
-                    <option value="Estampilla">Estampilla</option>
-                    <option value="Postal">Postal</option>
+                    <option value="Estampilla">Estampilla Vintage</option>
+                    <option value="Postal">Postal Clásica</option>
                 </select>
             </div>
             <div class="form-group">
@@ -200,7 +195,7 @@
 
             <h2>Mi Colección</h2>
             <div id="collection-grid" class="item-grid">
-                <!-- Los elementos cargados se mostrarán acá -->
+                <!-- Elementos cargados -->
             </div>
         </div>
     </div>
@@ -267,12 +262,12 @@
             signOut(auth);
         });
 
-        // Generar hash único y aleatorio para la estampa
+        // Generar hash único
         function generateUniqueHash() {
-            return "VY-" + Math.random().toString(36.25).substring(2, 10).toUpperCase() + "-" + Date.now().toString(36).toUpperCase();
+            return "VY-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Date.now().toString(36).toUpperCase();
         }
 
-        // Formateador de Fecha y Hora 24hs con Milisegundos
+        // Formato 24hs con Milisegundos exactos
         function getAtomicTimestamp(dateObj) {
             const d = dateObj ? new Date(dateObj) : new Date();
             const day = String(d.getDate()).padStart(2, '0');
@@ -285,50 +280,106 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}.${ms}`;
         }
 
-        // Procesar imagen con Sello Atómico ventaniYA Soluciones sobre Canvas
-        function processImageWithAtomicStamp(file, type, maxWidth = 600, quality = 0.75) {
+        // Procesar imagen con diseño de Estampilla Vintage y Sello Cian Brillante
+        function processVintageStampImage(file, type, customTimestamp, customHash) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement("canvas");
-                        let width = maxWidth;
-                        let height = Math.round((img.height * maxWidth) / img.width);
-
-                        // Si es estampilla, ajustamos proporción vertical distintiva
-                        if (type === "Estampilla") {
-                            height = Math.round(width * 1.3);
-                        }
-
-                        // Espacio extra abajo para el sello atómico de la marca
-                        const bannerHeight = 55;
-                        canvas.width = width;
-                        canvas.height = height + bannerHeight;
-
                         const ctx = canvas.getContext("2d");
 
-                        // Fondo blanco total
-                        ctx.fillStyle = "#ffffff";
+                        // Dimensiones base de alta resolución para la estampa
+                        const baseWidth = 700;
+                        const isStamp = type === "Estampilla";
+                        const baseHeight = isStamp ? 900 : 500; // formato postal más apaisado o estampilla vertical
+
+                        canvas.width = baseWidth;
+                        canvas.height = baseHeight;
+
+                        // 1. Fondo de papel viejo/pergamino sutil
+                        ctx.fillStyle = "#fdfbf7";
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // Dibujar imagen principal
-                        ctx.drawImage(img, 0, 0, width, height);
+                        // Marco interno vintage decorativo
+                        ctx.strokeStyle = "#b0a89e";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-                        // Franja del Sello Atómico ventaniYA Soluciones
-                        ctx.fillStyle = "#1a73e8";
-                        ctx.fillRect(0, height, width, bannerHeight);
+                        // 2. Dibujar imagen principal centrada con margen interno
+                        const margin = 35;
+                        const imgAreaWidth = canvas.width - (margin * 2);
+                        const imgAreaHeight = isStamp ? 550 : 320;
+                        
+                        // Calcular proporciones
+                        let drawW = imgAreaWidth;
+                        let drawH = (img.height * drawW) / img.width;
+                        if (drawH > imgAreaHeight) {
+                            drawH = imgAreaHeight;
+                            drawW = (img.width * drawH) / img.height;
+                        }
+                        const drawX = margin + (imgAreaWidth - drawW) / 2;
+                        const drawY = margin + 15;
 
-                        // Texto del sello de marca y timestamp atómico
+                        // Sombra sutil para la foto
+                        ctx.save();
+                        ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+                        ctx.shadowBlur = 8;
                         ctx.fillStyle = "#ffffff";
-                        ctx.font = "bold 12px Arial";
-                        ctx.fillText("ventaniYA Soluciones - Sello Atómico", 12, height + 22);
+                        ctx.fillRect(drawX - 4, drawY - 4, drawW + 8, drawH + 8);
+                        ctx.restore();
 
-                        const nowFormatted = getAtomicTimestamp();
-                        ctx.font = "10px monospace";
-                        ctx.fillText(`TS: ${nowFormatted} | HASH: ${generateUniqueHash()}`, 12, height + 40);
+                        // Pintar imagen
+                        ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
-                        resolve(canvas.toDataURL("image/jpeg", quality));
+                        // 3. Franja o pie de sello con estética vintage oscura para contraste
+                        const footerHeight = 120;
+                        const footerY = canvas.height - footerHeight - 15;
+                        ctx.fillStyle = "#1b1d21";
+                        ctx.fillRect(margin, footerY, canvas.width - (margin * 2), footerHeight);
+
+                        // Marco interno del pie
+                        ctx.strokeStyle = "#4a4f58";
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(margin, footerY, canvas.width - (margin * 2), footerHeight);
+
+                        // 4. Textos en CELESTE BRILLANTE CIAN (#00ffff) bien visibles
+                        const cyanColor = "#00ffff";
+                        const whiteColor = "#ffffff";
+
+                        // Marca de agua / Sello ventaniYA
+                        ctx.fillStyle = cyanColor;
+                        ctx.font = "bold 16px monospace";
+                        ctx.fillText("⚡ ventaniYA Soluciones - Sello Atómico Vintage", margin + 15, footerY + 30);
+
+                        // Línea de tiempo y Hash en Cyan brillante
+                        const tsText = `TS: ${customTimestamp || getAtomicTimestamp()}`;
+                        const hashText = `HASH: ${customHash || generateUniqueHash()}`;
+
+                        ctx.font = "bold 13px monospace";
+                        ctx.fillStyle = cyanColor;
+                        ctx.fillText(tsText, margin + 15, footerY + 65);
+                        ctx.fillText(hashText, margin + 15, footerY + 95);
+
+                        // Efecto de perforación de bordes (Dientes de estampilla simulados con círculos blancos superpuestos en los bordes)
+                        if (isStamp) {
+                            ctx.fillStyle = "#fdfbf7";
+                            const dotRadius = 7;
+                            const spacing = 24;
+                            // Arriba y Abajo
+                            for (let x = 20; x < canvas.width; x += spacing) {
+                                ctx.beginPath(); ctx.arc(x, 15, dotRadius, 0, Math.PI * 2); ctx.fill();
+                                ctx.beginPath(); ctx.arc(x, canvas.height - 15, dotRadius, 0, Math.PI * 2); ctx.fill();
+                            }
+                            // Izquierda y Derecha
+                            for (let y = 20; y < canvas.height; y += spacing) {
+                                ctx.beginPath(); ctx.arc(15, y, dotRadius, 0, Math.PI * 2); ctx.fill();
+                                ctx.beginPath(); ctx.arc(canvas.width - 15, y, dotRadius, 0, Math.PI * 2); ctx.fill();
+                            }
+                        }
+
+                        resolve(canvas.toDataURL("image/jpeg", 0.90));
                     };
                     img.onerror = reject;
                     img.src = e.target.result;
@@ -352,17 +403,20 @@
             }
 
             if (!editId && !imageFile) {
-                alert("Seleccioná una imagen para el nuevo elemento.");
+                alert("Seleccioná una imagen para generar la estampilla.");
                 return;
             }
 
             saveItemBtn.disabled = true;
-            saveItemBtn.textContent = "Aplicando sello atómico...";
+            saveItemBtn.textContent = "Generando Estampilla Vintage...";
 
             try {
                 let base64Image = null;
+                const uniqueHash = generateUniqueHash();
+                const formattedTimestamp = getAtomicTimestamp();
+
                 if (imageFile) {
-                    base64Image = await processImageWithAtomicStamp(imageFile, type);
+                    base64Image = await processVintageStampImage(imageFile, type, formattedTimestamp, uniqueHash);
                 }
 
                 if (editId) {
@@ -370,13 +424,9 @@
                     if (base64Image) updateData.image = base64Image;
 
                     await updateDoc(doc(db, "items", editId), updateData);
-                    alert("¡Elemento actualizado con sello atómico!");
+                    alert("¡Elemento vintage actualizado con éxito!");
                     resetForm();
                 } else {
-                    const uniqueHash = generateUniqueHash();
-                    const rawDate = new Date();
-                    const formattedTimestamp = getAtomicTimestamp(rawDate);
-
                     await addDoc(collection(db, "items"), {
                         title,
                         type,
@@ -384,9 +434,9 @@
                         image: base64Image,
                         hash: uniqueHash,
                         timestamp: formattedTimestamp,
-                        createdAt: rawDate.toISOString()
+                        createdAt: new Date().toISOString()
                     });
-                    alert("¡Estampilla/Postal generada y guardada con éxito!");
+                    alert("¡Estampilla vintage creada y guardada con éxito!");
                     document.getElementById("item-title").value = "";
                     document.getElementById("item-desc").value = "";
                     document.getElementById("item-image").value = "";
@@ -395,14 +445,14 @@
                 loadCollection();
             } catch (error) {
                 console.error("Error al guardar:", error);
-                alert("Hubo un error al procesar la operación.");
+                alert("Hubo un error al procesar la estampa.");
             } finally {
                 saveItemBtn.disabled = false;
                 saveItemBtn.textContent = "Guardar en el Álbum";
             }
         });
 
-        // Cargar colección con trazabilidad completa
+        // Cargar colección
         async function loadCollection() {
             collectionGrid.innerHTML = "<p>Cargando colección...</p>";
             try {
@@ -411,19 +461,18 @@
                 
                 collectionGrid.innerHTML = "";
                 if (querySnapshot.empty) {
-                    collectionGrid.innerHTML = "<p>El álbum está vacío todavía. ¡Subí tu primera estampilla con sello atómico!</p>";
+                    collectionGrid.innerHTML = "<p>El álbum está vacío todavía. ¡Subí tu primera estampa vintage!</p>";
                     return;
                 }
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const docId = docSnap.id;
-                    const cardClass = data.type === "Estampilla" ? "item-card estampilla" : "item-card postal";
                     const displayTimestamp = data.timestamp || getAtomicTimestamp();
                     const displayHash = data.hash || generateUniqueHash();
 
                     const card = document.createElement("div");
-                    card.className = cardClass;
+                    card.className = "item-card";
                     card.innerHTML = `
                         <img src="${data.image || ''}" alt="${data.title}">
                         <h3>${data.title}</h3>
@@ -432,7 +481,7 @@
                         <div class="meta-info">
                             <div><strong>🕒 24hs:</strong> ${displayTimestamp}</div>
                             <div><strong>#️⃣ Hash:</strong> ${displayHash}</div>
-                            <div><strong>⚡ ventaniYA:</strong> Sello Atómico OK</div>
+                            <div><strong>⚡ ventaniYA:</strong> Sello Cyan OK</div>
                         </div>
                         <div class="card-actions">
                             <button class="btn-secondary download-btn" data-img="${data.image}" data-title="${data.title}">Descargar</button>
@@ -443,11 +492,11 @@
                     collectionGrid.appendChild(card);
                 });
 
-                // Acciones de botones
+                // Botones Descargar
                 document.querySelectorAll(".download-btn").forEach(btn => {
                     btn.addEventListener("click", (e) => {
                         const imgSrc = e.target.getAttribute("data-img");
-                        const imgTitle = e.target.getAttribute("data-title") || "estampilla";
+                        const imgTitle = e.target.getAttribute("data-title") || "estampilla_vintage";
                         const a = document.createElement("a");
                         a.href = imgSrc;
                         a.download = `${imgTitle.replace(/\s+/g, '_')}_ventaniYA.jpg`;
@@ -457,6 +506,7 @@
                     });
                 });
 
+                // Botones Editar
                 document.querySelectorAll(".edit-btn").forEach(btn => {
                     btn.addEventListener("click", (e) => {
                         editDocIdInput.value = e.target.getAttribute("data-id");
@@ -464,13 +514,14 @@
                         document.getElementById("item-type").value = e.target.getAttribute("data-type");
                         document.getElementById("item-desc").value = e.target.getAttribute("data-desc");
                         
-                        formTitleHeading.textContent = "Editar Elemento";
+                        formTitleHeading.textContent = "Editar Elemento Vintage";
                         saveItemBtn.textContent = "Guardar Cambios";
                         cancelEditBtn.classList.remove("hidden");
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     });
                 });
 
+                // Botones Borrar
                 document.querySelectorAll(".delete-btn").forEach(btn => {
                     btn.addEventListener("click", async (e) => {
                         if (confirm("¿Estás seguro de borrar este elemento del álbum?")) {
