@@ -232,8 +232,8 @@
             signOut(auth);
         });
 
-        // Función para comprimir imagen a Base64 (evita usar Storage y pagar plan)
-        function resizeImageAndGetBase64(file, maxWidth = 600, quality = 0.7) {
+        // Función robusta para comprimir imagen a Base64 chico y liviano
+        function resizeImageAndGetBase64(file, maxWidth = 400, quality = 0.6) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -255,10 +255,10 @@
 
                         resolve(canvas.toDataURL("image/jpeg", quality));
                     };
-                    img.onerror = reject;
+                    img.onerror = (err) => reject(new Error("No se pudo procesar la imagen."));
                     img.src = e.target.result;
                 };
-                reader.onerror = reject;
+                reader.onerror = (err) => reject(new Error("No se pudo leer el archivo."));
                 reader.readAsDataURL(file);
             });
         }
@@ -271,15 +271,17 @@
             const imageFile = document.getElementById("item-image").files[0];
 
             if (!title || !imageFile) {
-                alert("Por favor completá al menos el título y seleccioná una imagen.");
+                alert("Por favor completá el título y seleccioná una imagen.");
                 return;
             }
 
             saveItemBtn.disabled = true;
-            saveItemBtn.textContent = "Procesando y guardando...";
+            saveItemBtn.textContent = "Procesando imagen...";
 
             try {
                 const base64Image = await resizeImageAndGetBase64(imageFile);
+                
+                saveItemBtn.textContent = "Guardando en Firestore...";
 
                 await addDoc(collection(db, "items"), {
                     title,
@@ -295,8 +297,8 @@
                 alert("¡Guardado con éxito en el álbum!");
                 loadCollection();
             } catch (error) {
-                console.error(error);
-                alert("Hubo un error al guardar el elemento.");
+                console.error("Error detallado al guardar:", error);
+                alert("Hubo un error al guardar: " + error.message);
             } finally {
                 saveItemBtn.disabled = false;
                 saveItemBtn.textContent = "Guardar en el Álbum";
@@ -329,8 +331,8 @@
                     collectionGrid.appendChild(card);
                 });
             } catch (error) {
-                console.error(error);
-                collectionGrid.innerHTML = "<p>Error al cargar la colección.</p>";
+                console.error("Error al cargar colección:", error);
+                collectionGrid.innerHTML = "<p>Error al cargar la colección. Verificá las reglas de Firestore.</p>";
             }
         }
     </script>
